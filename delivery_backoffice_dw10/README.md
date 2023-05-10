@@ -1,6 +1,8 @@
 # delivery_backoffice_dw10
 
-A new Flutter project.
+📖 Projeto de estudo MobX + Modular no Flutter Web
+</br>
+👩‍🏫 [Academia do Flutter](https://academiadoflutter.com.br/)
 
 ## Getting Started
 
