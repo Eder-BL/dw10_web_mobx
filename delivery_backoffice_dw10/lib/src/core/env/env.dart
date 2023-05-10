@@ -13,5 +13,5 @@ class Env {
 
   String? maybeGet(String key) => dotenv.maybeGet(key);
 
-  String get(String key) => dotenv.get(key);
+  String get(key) => dotenv.get(key);
 }
