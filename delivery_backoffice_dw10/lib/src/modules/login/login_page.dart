@@ -4,9 +4,14 @@ import '../../core/ui/helpers/size_extensions.dart';
 import '../../core/ui/styles/colors_app.dart';
 import '../../core/ui/styles/text_styles.dart';
 
-class LoginPage extends StatelessWidget {
+class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
+  @override
+  State<LoginPage> createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     final screenShortestSide = context.screenShortestSide;
