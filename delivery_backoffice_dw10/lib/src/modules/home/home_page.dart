@@ -13,33 +13,17 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> with Loader, Messages {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Home Page'),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          showLoader();
-          Future.delayed(const Duration(seconds: 3), () {
-            hideLoader();
-
-            showSuccess('Sucesso');
-          });
-        },
-        child: const Icon(Icons.add),
-      ),
-      body: Container(
+    return Container(
+      child: Container(
         child: Column(
           children: [
             Padding(
-              padding: const EdgeInsets.all(20.0),
+              padding: const EdgeInsets.all(20),
               child: Form(
                 autovalidateMode: AutovalidateMode.onUserInteraction,
                 child: TextFormField(
-                  decoration: const InputDecoration(
-                    labelText: 'Login',
-                    border: OutlineInputBorder(),
-                  ),
+                  decoration: const InputDecoration(label: Text('Login: ')),
+                  validator: (String) => 'Erro',
                 ),
               ),
             ),
@@ -48,9 +32,9 @@ class _HomePageState extends State<HomePage> with Loader, Messages {
               height: 50,
               child: ElevatedButton(
                 onPressed: () {},
-                child: const Text('Entrar'),
+                child: const Text('Botão'),
               ),
-            )
+            ),
           ],
         ),
       ),

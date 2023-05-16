@@ -1,7 +1,7 @@
-enum SessionKeys {
+enum SessionStorageKeys {
   accessToken('/ACCESS_TOKEN/');
 
   final String key;
 
-  const SessionKeys(this.key);
+  const SessionStorageKeys(this.key);
 }

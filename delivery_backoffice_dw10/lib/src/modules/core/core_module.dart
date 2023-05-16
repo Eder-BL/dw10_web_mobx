@@ -1,8 +1,8 @@
 import 'package:flutter_modular/flutter_modular.dart';
 
 import '../../core/rest_client/custom_dio.dart';
-import '../../storage/session_storage.dart';
-import '../../storage/storage.dart';
+import '../../core/storage/session_storage.dart';
+import '../../core/storage/storage.dart';
 
 class CoreModule extends Module {
   @override
@@ -12,7 +12,7 @@ class CoreModule extends Module {
           export: true,
         ),
         Bind.lazySingleton(
-          (i) => CustomDio(),
+          (i) => CustomDio(i()),
           export: true,
         ),
       ];
