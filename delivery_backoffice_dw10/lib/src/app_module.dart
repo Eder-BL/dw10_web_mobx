@@ -1,6 +1,7 @@
 import 'package:flutter_modular/flutter_modular.dart';
 import './modules/core/core_module.dart';
 import 'modules/login/login_module.dart';
+import 'modules/payment_type/payment_type_module.dart';
 import 'modules/template/base_layout.dart';
 
 class AppModule extends Module {
@@ -18,7 +19,9 @@ class AppModule extends Module {
             body: RouterOutlet(),
           ),
           transition: TransitionType.noTransition,
-          children: [],
+          children: [
+            ModuleRoute('/payment-type', module: PaymentTypeModule()),
+          ],
         ),
       ];
 }
