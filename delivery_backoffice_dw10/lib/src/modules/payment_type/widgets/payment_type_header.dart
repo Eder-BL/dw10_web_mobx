@@ -11,6 +11,24 @@ class PaymentTypeHeader extends StatelessWidget {
       title: 'Administrar Tipos de Pagamento',
       buttonLabel: 'Adicionar Pagamento',
       searchChange: (value) {},
+      filterWidget: DropdownButton<bool?>(
+        value: null,
+        items: const [
+          DropdownMenuItem(
+            value: null,
+            child: Text('Todos'),
+          ),
+          DropdownMenuItem(
+            value: true,
+            child: Text('Ativos'),
+          ),
+          DropdownMenuItem(
+            value: false,
+            child: Text('Inativos'),
+          ),
+        ],
+        onChanged: (value) {},
+      ),
     );
   }
 }
