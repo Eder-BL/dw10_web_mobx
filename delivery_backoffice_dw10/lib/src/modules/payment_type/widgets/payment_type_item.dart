@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/ui/styles/text_styles.dart';
+import '../../../models/payment_type_model.dart';
 
 class PaymentTypeItem extends StatelessWidget {
-  const PaymentTypeItem({super.key});
+  final PaymentTypeModel payment;
+  const PaymentTypeItem({super.key, required this.payment});
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +23,9 @@ class PaymentTypeItem extends StatelessWidget {
         child: Row(
           children: [
             Image.asset(
-              'assets/images/icons/payment_cc_icon.png',
+              'assets/images/icons/payment_${payment.acronym}_icon.png',
+              errorBuilder: (context, error, stackTrace) =>
+                  Image.asset('assets/images/icons/payment_notfound_icon.png'),
             ),
             const SizedBox(
               width: 20,
@@ -37,7 +41,7 @@ class PaymentTypeItem extends StatelessWidget {
                 ),
                 const SizedBox(height: 10),
                 Text(
-                  'Cartão de Crédito',
+                  payment.name,
                   style: context.textStyles.textTitle,
                 ),
               ],

@@ -20,7 +20,7 @@ class AppModule extends Module {
           ),
           transition: TransitionType.noTransition,
           children: [
-            ModuleRoute('/payment-type', module: PaymentTypeModule()),
+            ModuleRoute('/payment-types', module: PaymentTypeModule()),
           ],
         ),
       ];

@@ -1,3 +1,4 @@
 {
     "dart.flutterHotReloadOnSave": "never",
+    "editor.rulers": [100]
 }
