@@ -63,6 +63,24 @@ mixin _$PaymentTypeController on PaymentTypeControllerBase, Store {
     });
   }
 
+  late final _$_filterEnabledAtom =
+      Atom(name: 'PaymentTypeControllerBase._filterEnabled', context: context);
+
+  bool? get filterEnabled {
+    _$_filterEnabledAtom.reportRead();
+    return super._filterEnabled;
+  }
+
+  @override
+  bool? get _filterEnabled => filterEnabled;
+
+  @override
+  set _filterEnabled(bool? value) {
+    _$_filterEnabledAtom.reportWrite(value, super._filterEnabled, () {
+      super._filterEnabled = value;
+    });
+  }
+
   late final _$_paymentTypeSelectedAtom = Atom(
       name: 'PaymentTypeControllerBase._paymentTypeSelected', context: context);
 

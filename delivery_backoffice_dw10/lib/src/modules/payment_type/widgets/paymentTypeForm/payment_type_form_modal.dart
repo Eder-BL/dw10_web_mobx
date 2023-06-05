@@ -13,8 +13,20 @@ class PaymentTypeFormModal extends StatefulWidget {
 }
 
 class _PaymentTypeFormModalState extends State<PaymentTypeFormModal> {
+  final formKey = GlobalKey<FormState>();
+  final nameEC = TextEditingController();
+  final acronymEC = TextEditingController();
+  var enabled = false;
+
   void _closeModal() {
     Navigator.of(context).pop();
+  }
+
+  @override
+  void dispose() {
+    nameEC.dispose();
+    acronymEC.dispose();
+    super.dispose();
   }
 
   @override
@@ -29,10 +41,13 @@ class _PaymentTypeFormModalState extends State<PaymentTypeFormModal> {
             children: [
               Stack(
                 children: [
-                  Text(
-                    '${widget.model == null ? 'Adicionar' : 'Editar'} Forma de Pagamento',
-                    textAlign: TextAlign.center,
-                    style: context.textStyles.textTitle,
+                  Align(
+                    alignment: Alignment.center,
+                    child: Text(
+                      '${widget.model == null ? 'Adicionar' : 'Editar'} Forma de Pagamento',
+                      textAlign: TextAlign.center,
+                      style: context.textStyles.textTitle,
+                    ),
                   ),
                   InkWell(
                     onTap: _closeModal,
@@ -45,7 +60,77 @@ class _PaymentTypeFormModalState extends State<PaymentTypeFormModal> {
                     ),
                   ),
                 ],
-              )
+              ),
+              const SizedBox(height: 20),
+              TextFormField(
+                initialValue: widget.model?.name,
+                decoration: const InputDecoration(
+                  labelText: 'Nome',
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Nome é obrigatório';
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 20),
+              TextFormField(
+                initialValue: widget.model?.acronym,
+                decoration: const InputDecoration(
+                  labelText: 'Sigla',
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Sigla é obrigatório';
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 20),
+              Row(
+                children: [
+                  Text(
+                    'Ativo:',
+                    style: context.textStyles.textRegular,
+                  ),
+                  Switch(
+                    value: widget.model?.enabled ?? false,
+                    onChanged: (value) {},
+                  ),
+                ],
+              ),
+              const Divider(),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    height: 60,
+                    child: OutlinedButton(
+                      style: OutlinedButton.styleFrom(
+                        side: const BorderSide(color: Colors.red),
+                      ),
+                      onPressed: () {},
+                      child: Text(
+                        'Cancelar',
+                        style: context.textStyles.textExtraBold.copyWith(
+                          color: Colors.red,
+                        ),
+                      ),
+                    ),
+                  ),
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    height: 60,
+                    child: ElevatedButton.icon(
+                      onPressed: () {},
+                      icon: const Icon(Icons.save),
+                      label: const Text('Salvar'),
+                    ),
+                  ),
+                ],
+              ),
             ],
           ),
         ),

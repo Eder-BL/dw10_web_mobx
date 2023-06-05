@@ -26,6 +26,10 @@ class _PaymentTypePageState extends State<PaymentTypePage> with Loader, Messages
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      final filterDisposer = reaction((_) => controller.filterEnabled, (_) {
+        controller.loadPayments();
+      });
+
       final statusDisposer = reaction((_) => controller.status, (status) {
         switch (status) {
           case PaymentTypeStateStatus.initial:
@@ -46,9 +50,17 @@ class _PaymentTypePageState extends State<PaymentTypePage> with Loader, Messages
             break;
         }
       });
-      disposers.addAll([statusDisposer]);
+      disposers.addAll([statusDisposer, filterDisposer]);
       controller.loadPayments();
     });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    for (var dispose in disposers) {
+      dispose();
+    }
   }
 
   void showAddOrUpdatePayment() {
