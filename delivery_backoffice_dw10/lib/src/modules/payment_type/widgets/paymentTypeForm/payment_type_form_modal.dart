@@ -3,10 +3,12 @@ import 'package:flutter/material.dart';
 import '../../../../core/ui/helpers/size_extensions.dart';
 import '../../../../core/ui/styles/text_styles.dart';
 import '../../../../models/payment_type_model.dart';
+import '../../payment_type_controller.dart';
 
 class PaymentTypeFormModal extends StatefulWidget {
+  final PaymentTypeController controller;
   final PaymentTypeModel? model;
-  const PaymentTypeFormModal({super.key, required this.model});
+  const PaymentTypeFormModal({super.key, required this.model, required this.controller});
 
   @override
   State<PaymentTypeFormModal> createState() => _PaymentTypeFormModalState();
@@ -18,8 +20,17 @@ class _PaymentTypeFormModalState extends State<PaymentTypeFormModal> {
   final acronymEC = TextEditingController();
   var enabled = false;
 
-  void _closeModal() {
-    Navigator.of(context).pop();
+  void _closeModal() => Navigator.of(context).pop();
+
+  @override
+  void initState() {
+    final paymentModel = widget.model;
+    if (paymentModel != null) {
+      nameEC.text = paymentModel.name;
+      acronymEC.text = paymentModel.acronym;
+      enabled = paymentModel.enabled;
+    }
+    super.initState();
   }
 
   @override
@@ -37,6 +48,7 @@ class _PaymentTypeFormModalState extends State<PaymentTypeFormModal> {
         width: screenWidth * (screenWidth > 1200 ? 0.5 : 0.7),
         padding: const EdgeInsets.all(30),
         child: Form(
+          key: formKey,
           child: Column(
             children: [
               Stack(
@@ -63,7 +75,8 @@ class _PaymentTypeFormModalState extends State<PaymentTypeFormModal> {
               ),
               const SizedBox(height: 20),
               TextFormField(
-                initialValue: widget.model?.name,
+                controller: nameEC,
+                // initialValue: widget.model?.name ?? '',
                 decoration: const InputDecoration(
                   labelText: 'Nome',
                 ),
@@ -76,7 +89,8 @@ class _PaymentTypeFormModalState extends State<PaymentTypeFormModal> {
               ),
               const SizedBox(height: 20),
               TextFormField(
-                initialValue: widget.model?.acronym,
+                controller: acronymEC,
+                // initialValue: widget.model?.acronym ?? '',
                 decoration: const InputDecoration(
                   labelText: 'Sigla',
                 ),
@@ -95,8 +109,12 @@ class _PaymentTypeFormModalState extends State<PaymentTypeFormModal> {
                     style: context.textStyles.textRegular,
                   ),
                   Switch(
-                    value: widget.model?.enabled ?? false,
-                    onChanged: (value) {},
+                    value: enabled,
+                    onChanged: (value) {
+                      setState(() {
+                        enabled = value;
+                      });
+                    },
                   ),
                 ],
               ),
@@ -111,7 +129,7 @@ class _PaymentTypeFormModalState extends State<PaymentTypeFormModal> {
                       style: OutlinedButton.styleFrom(
                         side: const BorderSide(color: Colors.red),
                       ),
-                      onPressed: () {},
+                      onPressed: _closeModal,
                       child: Text(
                         'Cancelar',
                         style: context.textStyles.textExtraBold.copyWith(
@@ -124,7 +142,18 @@ class _PaymentTypeFormModalState extends State<PaymentTypeFormModal> {
                     padding: const EdgeInsets.all(8),
                     height: 60,
                     child: ElevatedButton.icon(
-                      onPressed: () {},
+                      onPressed: () {
+                        final valid = formKey.currentState?.validate() ?? false;
+
+                        if (valid) {
+                          widget.controller.savePayment(
+                            id: widget.model?.id,
+                            name: nameEC.text,
+                            acronym: acronymEC.text,
+                            enabled: enabled,
+                          );
+                        }
+                      },
                       icon: const Icon(Icons.save),
                       label: const Text('Salvar'),
                     ),

@@ -48,6 +48,12 @@ class _PaymentTypePageState extends State<PaymentTypePage> with Loader, Messages
             hideLoader();
             showAddOrUpdatePayment();
             break;
+          case PaymentTypeStateStatus.saved:
+            hideLoader();
+            Navigator.of(context, rootNavigator: true).pop();
+            controller.loadPayments();
+            showSuccess('Forma de pagamento salva com sucesso');
+            break;
         }
       });
       disposers.addAll([statusDisposer, filterDisposer]);
@@ -73,7 +79,10 @@ class _PaymentTypePageState extends State<PaymentTypePage> with Loader, Messages
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
             backgroundColor: Colors.white,
             elevation: 10,
-            child: PaymentTypeFormModal(model: controller.paymentTypeSelected),
+            child: PaymentTypeFormModal(
+              model: controller.paymentTypeSelected,
+              controller: controller,
+            ),
           ),
         );
       },
