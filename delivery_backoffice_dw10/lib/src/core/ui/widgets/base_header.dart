@@ -5,18 +5,18 @@ import '../styles/text_styles.dart';
 
 class BaseHeader extends StatelessWidget {
   final String title;
-  final ValueChanged<String> searchChange;
   final String buttonLabel;
   final VoidCallback? buttonPressed;
+  final ValueChanged<String>? searchChange;
   final bool addButton;
   final Widget? filterWidget;
 
   const BaseHeader({
     Key? key,
     required this.title,
-    required this.searchChange,
     required this.buttonLabel,
     required this.buttonPressed,
+    this.searchChange,
     this.addButton = true,
     this.filterWidget,
   }) : super(key: key);
