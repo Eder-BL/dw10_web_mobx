@@ -9,7 +9,8 @@ part of 'payment_type_controller.dart';
 // ignore_for_file: non_constant_identifier_names, unnecessary_brace_in_string_interps, unnecessary_lambdas, prefer_expression_function_bodies, lines_longer_than_80_chars, avoid_as, avoid_annotating_with_dynamic, no_leading_underscores_for_local_identifiers
 
 mixin _$PaymentTypeController on PaymentTypeControllerBase, Store {
-  late final _$_statusAtom = Atom(name: 'PaymentTypeControllerBase._status', context: context);
+  late final _$_statusAtom =
+      Atom(name: 'PaymentTypeControllerBase._status', context: context);
 
   PaymentTypeStateStatus get status {
     _$_statusAtom.reportRead();
@@ -81,9 +82,7 @@ mixin _$PaymentTypeController on PaymentTypeControllerBase, Store {
   }
 
   late final _$_paymentTypeSelectedAtom = Atom(
-    name: 'PaymentTypeControllerBase._paymentTypeSelected',
-    context: context,
-  );
+      name: 'PaymentTypeControllerBase._paymentTypeSelected', context: context);
 
   PaymentTypeModel? get paymentTypeSelected {
     _$_paymentTypeSelectedAtom.reportRead();
@@ -95,7 +94,8 @@ mixin _$PaymentTypeController on PaymentTypeControllerBase, Store {
 
   @override
   set _paymentTypeSelected(PaymentTypeModel? value) {
-    _$_paymentTypeSelectedAtom.reportWrite(value, super._paymentTypeSelected, () {
+    _$_paymentTypeSelectedAtom.reportWrite(value, super._paymentTypeSelected,
+        () {
       super._paymentTypeSelected = value;
     });
   }
@@ -128,15 +128,13 @@ mixin _$PaymentTypeController on PaymentTypeControllerBase, Store {
       AsyncAction('PaymentTypeControllerBase.savePayment', context: context);
 
   @override
-  Future<void> savePayment({
-    int? id,
-    required String name,
-    required String acronym,
-    required bool enabled,
-  }) {
-    return _$savePaymentAsyncAction.run(
-      () => super.savePayment(id: id, name: name, acronym: acronym, enabled: enabled),
-    );
+  Future<void> savePayment(
+      {int? id,
+      required String name,
+      required String acronym,
+      required bool enabled}) {
+    return _$savePaymentAsyncAction.run(() => super
+        .savePayment(id: id, name: name, acronym: acronym, enabled: enabled));
   }
 
   @override
