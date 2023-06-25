@@ -25,7 +25,7 @@ class _ProductsPageState extends State<ProductsPage> with Loader, Messages {
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      statusDisposer = reaction((_) => controller.status, (status) {
+      statusDisposer = reaction((_) => controller.status, (status) async {
         switch (status) {
           case ProductsStatus.initial:
             break;
@@ -38,6 +38,16 @@ class _ProductsPageState extends State<ProductsPage> with Loader, Messages {
           case ProductsStatus.error:
             hideLoader();
             showError('Erro ao buscar produtos');
+            break;
+          case ProductsStatus.addOrUpdateProduct:
+            hideLoader();
+            final productSelected = controller.productSelected;
+            var uri = '/products/detail';
+            if (productSelected != null) {
+              uri += '?id=${productSelected.id}';
+            }
+            await Modular.to.pushNamed(uri);
+            controller.loadProducts();
             break;
         }
       });
@@ -63,8 +73,7 @@ class _ProductsPageState extends State<ProductsPage> with Loader, Messages {
             title: 'Administrar Produtos',
             buttonLabel: 'Adicionar Produto',
             buttonPressed: () async {
-              await Modular.to.pushNamed('/products/detail');
-              controller.loadProducts();
+              controller.addProduct();
             },
             searchChange: (value) {
               debouncer.call(() {

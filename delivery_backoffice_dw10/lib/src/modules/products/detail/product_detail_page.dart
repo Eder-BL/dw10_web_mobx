@@ -7,6 +7,7 @@ import 'package:mobx/mobx.dart';
 import 'package:validatorless/validatorless.dart';
 
 import '../../../core/env/env.dart';
+import '../../../core/extensions/formatter_extensions.dart';
 import '../../../core/ui/helpers/loader.dart';
 import '../../../core/ui/helpers/messages.dart';
 import '../../../core/ui/helpers/size_extensions.dart';
@@ -31,9 +32,17 @@ class _ProductDetailPageState extends State<ProductDetailPage> with Loader, Mess
   final descriptionEC = TextEditingController();
 
   @override
+  void dispose() {
+    nameEC.dispose();
+    priceEC.dispose();
+    descriptionEC.dispose();
+    super.dispose();
+  }
+
+  @override
   void initState() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      reaction((_) => controller.status, (status) {
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      reaction((p0) => controller.status, (status) {
         switch (status) {
           case ProductDetailStateStatus.initial:
             break;
@@ -41,6 +50,11 @@ class _ProductDetailPageState extends State<ProductDetailPage> with Loader, Mess
             showLoader();
             break;
           case ProductDetailStateStatus.loaded:
+            final model = controller.productModel!;
+            nameEC.text = model.name;
+            priceEC.text = model.price.currencyPTBR;
+            descriptionEC.text = model.description;
+
             hideLoader();
             break;
           case ProductDetailStateStatus.error:
@@ -48,8 +62,13 @@ class _ProductDetailPageState extends State<ProductDetailPage> with Loader, Mess
             showError(controller.errorMessage!);
             break;
           case ProductDetailStateStatus.errorLoadProduct:
+            hideLoader();
+            showError('Erro ao carregar produto');
+            Navigator.of(context).pop();
             break;
           case ProductDetailStateStatus.deleted:
+            hideLoader();
+            Navigator.of(context).pop();
             break;
           case ProductDetailStateStatus.uploaded:
             hideLoader();
@@ -60,24 +79,17 @@ class _ProductDetailPageState extends State<ProductDetailPage> with Loader, Mess
             break;
         }
       });
+      controller.loadProduct(widget.productId);
     });
     super.initState();
   }
 
   @override
-  void dispose() {
-    nameEC.dispose();
-    priceEC.dispose();
-    descriptionEC.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    final widthButtonAction = context.percentWidth(.4);
+    final widgetButtonAction = context.percentWidth(.4);
     return Container(
       color: Colors.grey[50],
-      padding: const EdgeInsets.only(left: 40, top: 40, right: 40),
+      padding: const EdgeInsets.all(40),
       child: SingleChildScrollView(
         child: Form(
           key: formKey,
@@ -87,7 +99,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> with Loader, Mess
                 children: [
                   Expanded(
                     child: Text(
-                      '${widget.productId == null ? 'Adicionar' : 'Alterar'} produto',
+                      '${widget.productId != null ? 'Alterar' : 'Adicionar'} produto',
                       textAlign: TextAlign.center,
                       style: context.textStyles.textTitle.copyWith(
                         decoration: TextDecoration.underline,
@@ -99,7 +111,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> with Loader, Mess
                     onPressed: () {
                       Navigator.pop(context);
                     },
-                    icon: const Icon(Icons.close),
+                    icon: const Icon(Icons.close_rounded),
                   )
                 ],
               ),
@@ -118,47 +130,31 @@ class _ProductDetailPageState extends State<ProductDetailPage> with Loader, Mess
                               padding: const EdgeInsets.all(8.0),
                               child: Image.network(
                                 '${Env.instance.get('backend_base_url')}${controller.imagePath}',
-                                width: 200,
+                                width: 250,
                               ),
                             );
                           }
-                          return Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Container(
-                              width: 200,
-                              height: 200,
-                              decoration: BoxDecoration(
-                                border: Border.all(color: Colors.grey),
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              child: const Icon(
-                                Icons.camera_alt,
-                                size: 50,
-                              ),
-                            ),
-                          );
+                          return const SizedBox.shrink();
                         },
                       ),
                       Container(
                         margin: const EdgeInsets.all(10),
                         child: TextButton(
-                          onPressed: () {
-                            UploadHtmlHelper().startUpload(
-                              (file, fileName) {
-                                controller.uploadImageProduct(file, fileName);
-                              },
-                            );
-                          },
                           style: TextButton.styleFrom(
                             backgroundColor: Colors.white.withOpacity(0.9),
                           ),
                           child: Observer(
                             builder: (_) {
                               return Text(
-                                '${controller.imagePath == null ? 'Adicionar' : 'Alterar'} foto',
+                                controller.imagePath == null ? 'Adicionar foto' : 'Alterar foto',
                               );
                             },
                           ),
+                          onPressed: () {
+                            UploadHtmlHelper().startUpload(
+                              controller.uploadImageProduct,
+                            );
+                          },
                         ),
                       )
                     ],
@@ -169,22 +165,20 @@ class _ProductDetailPageState extends State<ProductDetailPage> with Loader, Mess
                         TextFormField(
                           controller: nameEC,
                           validator: Validatorless.required('Nome obrigatório'),
-                          decoration: const InputDecoration(
-                            labelText: 'Nome',
-                          ),
+                          decoration: const InputDecoration(label: Text('Nome')),
                         ),
                         const SizedBox(
                           height: 20,
                         ),
                         TextFormField(
                           controller: priceEC,
-                          validator: Validatorless.required('Preço obrigatório'),
+                          validator: Validatorless.required('Preço é obrigatório'),
                           decoration: const InputDecoration(
-                            labelText: 'Preço',
+                            label: Text('Preço'),
                           ),
                           inputFormatters: [
                             FilteringTextInputFormatter.digitsOnly,
-                            CentavosInputFormatter(moeda: true),
+                            CentavosInputFormatter(moeda: true)
                           ],
                         ),
                       ],
@@ -197,12 +191,12 @@ class _ProductDetailPageState extends State<ProductDetailPage> with Loader, Mess
               ),
               TextFormField(
                 controller: descriptionEC,
-                validator: Validatorless.required('Descrição obrigatória'),
-                keyboardType: TextInputType.multiline,
+                validator: Validatorless.required('Descrição é obrigatória'),
                 decoration: const InputDecoration(
-                  labelText: 'Descrição',
+                  label: Text('Descrição'),
                   alignLabelWithHint: true,
                 ),
+                keyboardType: TextInputType.multiline,
                 minLines: 10,
                 maxLines: null,
               ),
@@ -212,43 +206,81 @@ class _ProductDetailPageState extends State<ProductDetailPage> with Loader, Mess
               Align(
                 alignment: Alignment.centerRight,
                 child: SizedBox(
-                  width: widthButtonAction,
+                  width: widgetButtonAction,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       Container(
-                        padding: const EdgeInsets.all(5.0),
-                        width: widthButtonAction / 2,
+                        width: widgetButtonAction / 2,
+                        padding: const EdgeInsets.all(5),
                         height: 60,
-                        child: OutlinedButton(
-                          onPressed: () {},
-                          style: OutlinedButton.styleFrom(
-                            side: const BorderSide(color: Colors.red),
-                          ),
-                          child: Text(
-                            'Excluir',
-                            style: context.textStyles.textBold.copyWith(color: Colors.red),
+                        child: Visibility(
+                          visible: widget.productId != null,
+                          child: OutlinedButton(
+                            style: OutlinedButton.styleFrom(
+                              side: const BorderSide(color: Colors.red),
+                            ),
+                            onPressed: () {
+                              showDialog(
+                                barrierDismissible: false,
+                                context: context,
+                                builder: (context) => AlertDialog(
+                                  title: const Text('Confirmar'),
+                                  content: Text(
+                                    'Confirma a exclusão do produto ${controller.productModel!.name}',
+                                  ),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () => Navigator.of(context).pop(),
+                                      child: Text(
+                                        'Cancelar',
+                                        style:
+                                            context.textStyles.textBold.copyWith(color: Colors.red),
+                                      ),
+                                    ),
+                                    TextButton(
+                                      onPressed: () {
+                                        Navigator.pop(context);
+                                        controller.deleteProduct();
+                                      },
+                                      child: Text(
+                                        'Deletar',
+                                        style: context.textStyles.textBold,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
+                            child: Text(
+                              'Deletar',
+                              style: context.textStyles.textBold.copyWith(color: Colors.red),
+                            ),
                           ),
                         ),
                       ),
                       Container(
-                        padding: const EdgeInsets.all(5.0),
-                        width: widthButtonAction / 2,
+                        width: widgetButtonAction / 2,
+                        padding: const EdgeInsets.all(5),
                         height: 60,
                         child: ElevatedButton(
                           onPressed: () {
                             final valid = formKey.currentState?.validate() ?? false;
+
                             if (valid) {
                               if (controller.imagePath == null) {
-                                showWarning('Imagem obrigatória, por favor adicione uma imagem');
-                                return;
-                              } else {
-                                controller.save(
-                                  nameEC.text,
-                                  UtilBrasilFields.converterMoedaParaDouble(priceEC.text),
-                                  descriptionEC.text,
+                                showWarning(
+                                  'Imagem obrigatória, por favor clique em adicionar foto',
                                 );
+                                return;
                               }
+                              controller.save(
+                                nameEC.text,
+                                UtilBrasilFields.converterMoedaParaDouble(
+                                  priceEC.text,
+                                ),
+                                descriptionEC.text,
+                              );
                             }
                           },
                           child: Text(
@@ -260,7 +292,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> with Loader, Mess
                     ],
                   ),
                 ),
-              ),
+              )
             ],
           ),
         ),
