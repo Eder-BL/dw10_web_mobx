@@ -44,8 +44,8 @@ class OrderRepositoryImpl implements OrderRepository {
           if (status != null) 'status': status.acronym,
         },
       );
-      return (orderResponse.data as List)
-          .map((e) => OrderModel.fromMap(e as Map<String, dynamic>))
+      return orderResponse.data
+          .map<OrderModel>((e) => OrderModel.fromMap(e as Map<String, dynamic>))
           .toList();
     } on DioError catch (e, s) {
       log(
