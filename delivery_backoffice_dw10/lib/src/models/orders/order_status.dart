@@ -4,6 +4,7 @@ enum OrderStatus {
   pendente('Pendente', 'P', Colors.blue),
   confirmado('Confirmado', 'C', Colors.green),
   finalizado('Finalizado', 'F', Colors.black),
+  rejeitado('Rejeitado', 'R', Colors.red),
   cancelado('Cancelado', 'X', Colors.red);
 
   final String name;
